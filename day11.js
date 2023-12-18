@@ -230,4 +230,61 @@ function numberGalaxy(galaxy){
 }
 
 
-challenge1(input)
+// challenge1(input)//9565386
+
+function challenge2(arr){
+  let small = arr.map(line => line.split(''))
+  let answer = []
+  let map = []
+  let expanses = {x:[], y: []}
+
+  console.log('🗾', map);
+  small.forEach((line, y) => {
+    if(line.every(dot => dot == '.')){
+      expanses.y.push(y)
+    }
+  })
+
+  for(let i =0; i< small[0].length; i++){
+    let vert = small.map(line => line[i])
+    if(!vert.includes('#')){
+      expanses.x.push(i)
+    }
+  }
+  console.log('↔↕', expanses);
+
+  const numbered = numberGalaxy(small)
+  for(let y = 0; y < numbered.length; y++){
+    for(let x = 0; x< numbered[y].length; x++){
+      let cell = numbered[y][x]
+      if(cell != '.' && !Object.keys(map).includes(cell)){
+        map.push({x,y})
+      }
+    }
+  }
+  let expanseDistance = 999999
+  map.forEach((point, i) => {
+    map.forEach((otherPoint, j) => {
+      if(point == otherPoint) return
+      let dist = Math.abs(Math.abs(otherPoint.x - point.x) + Math.abs(otherPoint.y - point.y))
+      expanses.x.forEach(ex => {
+        if((point.x < ex && otherPoint.x > ex)|| (otherPoint.x < ex && point.x > ex)){
+          // console.log('crossed', ex);
+          dist+= expanseDistance
+        }
+      })
+      expanses.y.forEach(ey => {
+        if((point.y < ey && otherPoint.y > ey)|| (otherPoint.y < ey && point.y > ey)){
+          // console.log('crossed', ey);
+          dist+= expanseDistance
+        }
+      })
+      // console.log(i+1,'=>' ,j+1, dist);
+      answer.push(dist)
+    })
+  })
+  console.log('🍔', answer);
+  console.log('🌟', answer.reduce((acc, cur)=> acc+cur)/2);
+}
+
+challenge2(input)
