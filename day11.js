@@ -11,7 +11,7 @@ let test = [
   `..........`,
   `.......#..`,
   `#...#.....`
-]
+] // 374
 
 
 function challenge1(arr){
@@ -19,7 +19,27 @@ function challenge1(arr){
   console.log(small);
   let bigGalaxy = expandGalaxy(small)
   const numbered = numberGalaxy(bigGalaxy)
-
+  let answer = []
+  let map = []
+  for(let y = 0; y < numbered.length; y++){
+    for(let x = 0; x< numbered[y].length; x++){
+      let cell = numbered[y][x]
+      if(cell != '.' && !Object.keys(map).includes(cell)){
+        map.push({x,y})
+      }
+    }
+  }
+  console.log('🗾', map);
+  map.forEach((point, i) => {
+    map.forEach((otherPoint, j) => {
+      if(point == otherPoint) return
+      let dist = Math.abs(Math.abs(otherPoint.x - point.x) + Math.abs(otherPoint.y - point.y))
+      console.log(i+1,'=>' ,j+1, dist);
+      answer.push(dist)
+    })
+  })
+  console.log('🍔', answer);
+  console.log('🌟', answer.reduce((acc, cur)=> acc+cur)/2);
 }
 
 function expandGalaxy(small){
