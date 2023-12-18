@@ -1,6 +1,6 @@
 const input = [
   [
-      "364807853 302918330 20208251 1499552892 200291842 3284226943 16030044 2593569946 345762334 3692780593 17215731 1207118682 189983080 2231594291 72205975 3817565407 443061598 2313976854 203929368"
+      "364807853 408612163 302918330 20208251 1499552892 200291842 3284226943 16030044 2593569946 345762334 3692780593 17215731 1207118682 189983080 2231594291 72205975 3817565407 443061598 2313976854 203929368"
   ],
   [
       "seed-to-soil map:",
@@ -217,7 +217,40 @@ function challenge1(arr){
   console.log('🗺️', locations.sort())
 }
 
-// challenge1(input)
+function challenge1LONG(arr){
+  let [seeds] = arr.shift()
+  let lowest = Infinity
+  seeds = seeds.split(' ').map(s => parseInt(s))
+
+  for(let i = 0; i < seeds.length; i += 2){
+    console.time('seed loop')
+    const start = seeds[i]
+    const end = seeds[i]+seeds[i+1]
+    for(let s = start; s < end; s++){
+      let seed = s
+      
+      // console.log('🌱',seed);
+      let current = seed
+      arr.forEach(step => {
+      // console.log('converting',step[0])
+      let newSeed = stepToFrom(current, step.slice(1))
+      // console.log(current, ' ➡️ ', newSeed);
+      current = newSeed
+    })
+    lowest = current < lowest ? current : lowest
+    
+    
+    
+    }
+    console.timeEnd('seed loop')
+    console.log(i, '/', seeds.length/2)
+  }
+
+  console.log('', lowest)
+}
+
+// challenge1(input) //1181555926
+// challenge1LONG(input)
 
 function stepToFrom(seed, ranges){
   // console.log('r', ranges)
@@ -233,32 +266,54 @@ function stepToFrom(seed, ranges){
   return out
 }
 
+function stepBackward(seed, ranges){
+  let out = seed
+  let foundRange = ranges.find(range => {
+    let [dest, source, width] = range.split(' ').map(s => parseInt(s))
+    return seed >= dest && seed < (dest + width )
+  })
+  if(foundRange){
+    // console.log(seed, 'in range', foundRange);
+    let [dest, source] = foundRange.split(' ').map(s => parseInt(s))
+    let offset = source - dest
+    out = seed + offset
+  }
+  return out
+}
+
+
+
 function challenge2(arr){
   let [seeds] = arr.shift()
-  let low = Infinity
   seeds = seeds.split(' ').map(s => parseInt(s))
-  for(let i = 0; i < seeds.length; i+= 2){
-    console.time('seed loop')
-    const start =seeds[i]
-    const end = start + seeds[i+1]
-    for(let j = start; j < end; j++){
-      const seed = j
+  let backwards = arr.reverse()
+  let answer = 0
+  for (let l = 1; l < Infinity; l++){
+    if( l % 1000 == 0)console.log('🌷', l);
+    let current = l
+    backwards.forEach((step, s) => {
+      // console.log('converting',step[0])
+      let newSeed = stepBackward(current, step.slice(1))
+      // console.log(current, `⏩${s+1}/${arr.length}`, newSeed);
+      current = newSeed
       
-      // console.log('🌱',seed);
-      let current = seed
-      arr.forEach(step => {
-        let newSeed = stepToFrom(current, step.slice(1))
-        // console.log(current, step[0], newSeed);
-        current = newSeed
-      })
-      // console.log(seed,'🌿', current)
-      low = current < low ? current : low
-      
+    })
+    let isSeed = false
+    for(let i = 0; i < seeds.length; i+= 2){
+      // console.log(seeds[i], seeds[i+1]);
+      let start = seeds[i]
+      let end = start + seeds[i+1]
+      if(current >= start && current < end) {
+        isSeed = true
+        console.log(`${start}-[${current}]-${end}`, current >= start && current < end)
+      }
     }
-    console.log('🦧',seeds[i]);
-    console.timeEnd('seed loop')
+    if(isSeed){
+      answer = l
+      break
+    } 
   }
-  console.log('🌱', low)
+  console.log('🌱', answer)
 }
 
 
